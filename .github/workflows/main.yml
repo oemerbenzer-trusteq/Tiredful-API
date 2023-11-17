@@ -6,10 +6,38 @@ on:
       - developtment/pipeline
 
 jobs:
-  deploy:
+  Unittest:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Layer Unittest
+        run: |
+          echo Layer Unittest
+
+  Build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5.1.0
+        with:
+          push: false
+
+  Security:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Layer Security
+        run: |
+          echo Layer Security
+
+  Deployment:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository # can we remove this?
         uses: actions/checkout@v3
 
       - name: Setup KubeConfig
@@ -18,23 +46,7 @@ jobs:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
-      - name: Layer Unittest
-        run: |
-          echo Layer Unittest
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push
-        uses: docker/build-push-action@v5.1.0
-        with:
-          push: false
-
-      - name: Layer Security
-        run: |
-          echo Layer Security
-
-      - name: Layer Deployment
+      - name: Run kubectl
         run: |
           kubectl delete pod --ignore-not-found=true asp
           kubectl apply -f .github/workflows/asp.yaml
