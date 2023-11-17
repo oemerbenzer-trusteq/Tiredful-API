@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: asp
+spec:
+  containers:
+  - name: asp-container
+    image: tuxotron/tiredful-api

@@ -3,30 +3,36 @@ name: Automated Security Pipeline
 on:
   push:
     branches:
-      - master
+      - developtment/pipeline
 
 jobs:
   deploy:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      # - name: Build Docker & Push DockerHub
-      #   run: |
-      #     docker build . --tag ${{ secrets.DOCKER_IMAGE_TAG }}
-      #     docker push ${{ secrets.DOCKER_IMAGE_TAG }}
+      - name: Setup KubeConfig
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
-      # - name: Setup KubeConfig
-      #   uses: azure/k8s-set-context@v1
-      #   with:
-      #     kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Layer Unittest
+        run: |
+          echo Layer Unittest
 
-      # - name: Layer Unittest
-      # - name: Layer Build
-      # - name: Layer Security
+      - name: Layer Build
+        run: |
+          echo Layer Build
+        # docker build . --tag ${{ secrets.IMAGE_TAG }}
+        # docker push ${{ secrets.IMAGE_TAG }}
+
+      - name: Layer Security
+        run: |
+          echo Layer Security
 
       - name: Layer Deployment
         run: |
-          echo "Hello World!"
-          ls -la
+          kubectl delete pod --ignore-not-found=true asp
+          kubectl apply -f .github/workflows/asp.yaml
