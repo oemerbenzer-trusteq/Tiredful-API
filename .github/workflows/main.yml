@@ -17,6 +17,7 @@ jobs:
           echo Layer Unittest
 
   Build:
+    needs: Unittest
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Docker Buildx
@@ -28,6 +29,7 @@ jobs:
           push: false
 
   Security:
+    needs: Build
     runs-on: ubuntu-22.04
     steps:
       - name: Layer Security
@@ -35,6 +37,7 @@ jobs:
           echo Layer Security
 
   Deployment:
+    needs: Security
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository # can we remove this?
