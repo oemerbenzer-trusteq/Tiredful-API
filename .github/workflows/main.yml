@@ -27,6 +27,7 @@ jobs:
         uses: docker/build-push-action@v5.1.0
         with:
           push: false
+          tags: {{ vars.IMAGE_TAG }}
 
   Security:
     needs: Build
@@ -40,7 +41,7 @@ jobs:
     needs: Security
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository # can we remove this?
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Setup KubeConfig
@@ -53,3 +54,5 @@ jobs:
         run: |
           kubectl delete pod --ignore-not-found=true asp
           kubectl apply -f .github/workflows/asp.yaml
+          echo ${{vars.IMAGE_TAG}} deployed
+        # alternatively: kubectl run asp --image=${{ vars.IMAGE_TAG }} --restart=Never
